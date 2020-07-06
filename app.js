@@ -25,6 +25,7 @@ mongoose
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/Users/usersRoutes');
+const adminRouter = require('./routes/admin/adminRoutes');
 
 const app = express();
 
@@ -59,12 +60,16 @@ app.use(passport.session());
 
 app.use((req,res,next)=>{
   res.locals.user = req.user
-  res.locals.errors = req.flash
+  res.locals.errors = req.flash('errors');
+  res.locals.perrors = req.flash('perrors');
+  res.locals.messages = req.flash('messages');
+  res.locals.success = req.flash('success');
   next()
 })
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/admin', adminRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -4,10 +4,11 @@ const User = require('./models/User');
 const userValidation =require('./utils/userValidation')
 const { register, updateProfile, updatePassword } = require('./controllers/userController');
 const passport = require('passport')
+const { check, validationResult} = require('express-validator');
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
-  res.render('main/home')
+  res.render('main/home');
 });
 
 const thereIsAuth = (req, res, next) => {
@@ -22,7 +23,7 @@ router.get('/register', (req,res)=>{
   if(req.user) {
     return res.redirect(301, '/');
   }
-  res.render('auth/register',{errors: req.flash('errors')})
+  res.render('auth/register');
 }) 
 
 router.post('/register', userValidation,register);
@@ -48,7 +49,7 @@ router.get('/login', (req, res)=>{
   if(req.user) {
     return res.redirect(301, '/');
   }
-  return res.render('auth/login',{errors: req.flash('errors')})
+  return res.render('auth/login')
 })
 
 router.post('/login', passport.authenticate('local-login',{
@@ -64,7 +65,7 @@ router.get('/profile', (req, res) => {
     return res.render('auth/profile');
 
   } else {
-    return res.send('Unauthorized')
+    return res.send('Unauthorized');
   }
 });
 
@@ -75,14 +76,30 @@ router.get('/update-profile', (req, res) => {
 router.put('/update-profile', (req, res, next) => {
   updateProfile(req.body, req.user._id)
     .then((user) => {
-      return res.redirect(301, '/api/users/profile')
+      return res.redirect(301, '/api/users/profile');
     }).catch((err) => next(err));
 });
 
-router.put('/update-password', (req, res, next) => {
-  updatePassword(req.body, req.user._id).then((user) => {
-    return res.send('updated <br /> <a href="/logout">Logout</a>');
-  }).catch((err) => next(err));
-})
+const checkPassword = [
+  check('oldPassword', 'Please include a valid password').isLength({ min: 6}),
+  check('newPassword', 'Please include a valid password').isLength({ min: 6}),
+  check('repeatNewPassword', 'Please include a valid password').isLength({ min: 6})
+]
+
+router.put('/update-password', checkPassword, (req, res, next) => {
+  const errors = validationResult(req)
+  if(!errors.isEmpty())
+    return res.status(422).json({ errors: errors.array() });
+    try {
+      
+      updatePassword(req.body, req.user._id).then((user) => {
+        return res.redirect('/api/users/profile');
+      }).catch((err) => {
+        req.flash('perrors', 'Unable to Update user');
+        return res.redirect('/api/users/update-profile')});
+    } catch (errors) {
+      console.log(errors);
+    }
+});
 
 module.exports = router;
