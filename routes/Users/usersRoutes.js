@@ -4,8 +4,8 @@ const User = require('./models/User');
 const userValidation =require('./utils/userValidation')
 const { register, updateProfile, updatePassword } = require('./controllers/userController');
 const passport = require('passport')
-const { check, validationResult} = require('express-validator');
-
+const { check, validationResult } = require('express-validator');
+const { loginValidation, loginVerify } = require('./utils/loginValidation');
 /* GET users listing. */
 router.get('/', function (req, res, next) {
   res.render('main/home');
@@ -26,7 +26,7 @@ router.get('/register', (req,res)=>{
   res.render('auth/register');
 }) 
 
-router.post('/register', userValidation,register);
+router.post('/register', userValidation, register);
 // router.post('/register', (req,res,next)=>{
 //   User.findOne({email:req.body.email}).then((user)=>{
 //     if(user){
@@ -45,6 +45,14 @@ router.post('/register', userValidation,register);
 //   })
 // })
 
+// const errors = validationResult(req);
+//         if (!errors.isEmpty()) {
+//             // console.log(errors.errors);
+//             // return res.status(422).json({ err: errors.array() });
+//             req.flash('errors', errors.errors[0].msg);
+//             return res.redirect('/api/admin/add-category');
+
+
 router.get('/login', (req, res)=>{
   if(req.user) {
     return res.redirect(301, '/');
@@ -52,7 +60,7 @@ router.get('/login', (req, res)=>{
   return res.render('auth/login')
 })
 
-router.post('/login', passport.authenticate('local-login',{
+router.post('/login', loginValidation, loginVerify, passport.authenticate('local-login',{
   successRedirect:'/',
   failureRedirect:'/api/users/login',
   failureFlash:true
