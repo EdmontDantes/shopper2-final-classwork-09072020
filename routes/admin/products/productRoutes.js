@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const Product = require('../products/models/Product');
+const Product = require('./models/Product');
 
 router.get('/all-products/:id', (req, res, next) => {
     Product.find({category: req.params.id}).populate('category').exec((err, foundProducts) => {
