@@ -12,6 +12,11 @@ const methodOverride = require('method-override');
 
 require('./lib/passport');
 require('dotenv').config();
+
+const Category = require('./routes/admin/categories/models/Category')
+
+const getAllCategories = require('./routes/admin/categories/middleware/getAllCategories')
+
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -26,7 +31,7 @@ mongoose
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/Users/usersRoutes');
 const adminRouter = require('./routes/admin/adminRoutes');
-
+const productsRouter = require('./routes/admin/products/productRoutes');
 const app = express();
 
 // view engine setup
@@ -40,6 +45,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
+app.use(getAllCategories);
 
 app.use(
   session({
@@ -70,6 +76,7 @@ app.use((req,res,next)=>{
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/products', productsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
