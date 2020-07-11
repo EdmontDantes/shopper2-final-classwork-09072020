@@ -28,7 +28,8 @@ module.exports = {
         if(err) {
           return res.status(400).json({ confirmation: false, message: err })
         } else {
-          res.redirect(301, '/');
+          // res.redirect(301, '/');
+          next()
         }
       })
     } catch (error) {

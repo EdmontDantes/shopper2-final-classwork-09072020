@@ -6,6 +6,9 @@ const { register, updateProfile, updatePassword } = require('./controllers/userC
 const passport = require('passport')
 const { check, validationResult } = require('express-validator');
 const { loginValidation, loginVerify } = require('./utils/loginValidation');
+
+const { createUserCart } = require('../cart/controllers/cartController');
+
 /* GET users listing. */
 router.get('/', function (req, res, next) {
   res.render('main/home');
@@ -19,6 +22,7 @@ const thereIsAuth = (req, res, next) => {
 }
 
 
+
 router.get('/register', (req,res)=>{
   if(req.user) {
     return res.redirect(301, '/');
@@ -26,7 +30,7 @@ router.get('/register', (req,res)=>{
   res.render('auth/register');
 }) 
 
-router.post('/register', userValidation, register);
+router.post('/register', userValidation, register, createUserCart);
 // router.post('/register', (req,res,next)=>{
 //   User.findOne({email:req.body.email}).then((user)=>{
 //     if(user){

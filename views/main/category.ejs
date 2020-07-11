@@ -18,7 +18,7 @@
                 <% for( let i = 0; i < 24; i++ ) { %>
                     <div class="col-md-4" style="margin-bottom: 30px;">
                         <div class="card" style="width:20rem;">
-                            <a href="#" style="text-decoration:none">
+                            <a href="/api/products/single-product/<%= products[i]._id %>" style="text-decoration:none">
                                 <img class="card-img-top" src="<%= products[i].image %>" alt="..." />
                             </a>
                             <div class="card-body">
